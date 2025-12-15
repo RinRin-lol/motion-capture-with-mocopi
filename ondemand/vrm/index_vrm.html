@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>VRM + JSONモーション再生（デフォルトVRM + 任意VRM）</title>
+  <link rel="stylesheet" href="index_vrm.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <div id="ui">
+    <!-- 好きなVRMを読み込む -->
+    <label>
+      VRM選択：
+      <input type="file" id="vrmInput" accept=".vrm" />
+    </label>
+
+    <!-- JSONモーション -->
+    <label>
+      JSONモーション：
+      <input type="file" id="jsonUpload" accept=".json" />
+    </label>
+
+    <button id="playButton">▶ 再生</button>
+    <button id="pauseButton">⏸ 停止</button>
+    <input type="range" id="progressBar" value="0" min="0" step="1" />
+    <label><input type="checkbox" id="fixRoot" /> root位置を固定</label>
+    <label><input type="checkbox" id="fixcoordinate_system" /> 座標系の修正</label>
+  </div>
+
+  <!-- three / three-vrm 読み込み -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.177.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.177.0/examples/jsm/",
+        "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3/lib/three-vrm.module.min.js"
+      }
+    }
+  </script>
+  <script type="module" src="index_vrm.js"></script>
+</body>
+</html>

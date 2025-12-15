@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Dual JSON Motion Viewer</title>
+  <link rel="stylesheet" href="index_dual.css">
+
+</head>
+<body>
+  <div id="controls">
+    <label class="upload-label">JSON1<input type="file" id="jsonUpload1" accept=".json"></label>
+    <label class="upload-label">JSON2<input type="file" id="jsonUpload2" accept=".json"></label>
+    <button id="playButton">再生</button>
+    <button id="pauseButton">停止</button>
+  </div>
+  <div id="progressContainer">
+    <span id="currentTime">0:00</span>
+    <input type="range" id="progressBar" min="0" max="100" value="0">
+    <span id="totalTime">0:00</span>
+  </div>
+
+  <script src="../../assets/libs/three.min.js"></script>
+  <script src="../../assets/libs/OrbitControls.js"></script>
+  <script src="index_dual.js"></script>
+</body>
+</html>

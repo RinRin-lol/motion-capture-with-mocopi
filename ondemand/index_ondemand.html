@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>three.js JSONモーション再生 + 3種角度グラフ（親相対スイング-ツイスト対応 / 円弧矢印）</title>
+  <link rel="stylesheet" href="index_ondemand.css" />
+</head>
+<body>
+  <!-- ===== 左上：基本操作 ===== -->
+  <div id="controls">
+    <label class="upload-label pill" style="display:inline-block;">
+      JSONファイル選択：<input type="file" id="jsonUpload" accept=".json"/>
+    </label>
+    <div class="muted" id="fileNameLabel">選択されたファイル：なし</div>
+    <div style="display:flex; gap:10px;">
+      <button class="pill" id="playButton">再生</button>
+      <button class="pill" id="pauseButton">停止</button>
+    </div>
+    <label class="row muted"><input type="checkbox" id="fixRoot"> root位置固定</label>
+    </label>
+    <div class="muted">停止中に「.」でコマ送り、「,」でコマ戻り<br>PCの場合はCtrlキー ＋ ドラックで移動</br><br>タブレットの場合は2本指でスライドで移動</br></div>
+    <div style="margin-top:6px;">
+      <button class="pill" id="resetCameraButton">カメラ初期位置に戻す</button>
+    </div>
+  </div>
+  </div>
+
+  <!-- ===== 右上：メニュー ===== -->
+  <div id="menu">
+    <button class="menu-toggle" id="menuBtn">☰</button>
+    <div id="menuContent" class="menu-content">
+      <div class="muted" style="margin-bottom:6px;">角度(°)は以下の3種類を一括表示します</div>
+
+      <label>再生FPS</label>
+      <select id="fpsSelect">
+        <option value="30">30 FPS</option>
+        <option value="50">50 FPS</option>
+        <option value="60">60 FPS</option>
+      </select>
+
+      <label>角度対象ボーン</label>
+      <select id="boneSelect"></select>
+
+      <div style="margin:6px 0 8px;">現在の角度</div>
+      <div class="angle-line"><span class="angle-name">Total（合成角・ワールド基準）</span><span id="angleNowTotal" class="angle-value">-°</span></div>
+      <div class="angle-line"><span class="angle-name">Twist（ひねり角・親相対厳密）</span><span id="angleNowTwist" class="angle-value">-°</span></div>
+      <div class="angle-line"><span class="angle-name">Relative（親相対の合成角）</span><span id="angleNowRelative" class="angle-value">-°</span></div>
+
+      <!-- ★ ここから追加：ワールド座標表示 -->
+      <hr style="border-color:#555; margin:10px 0;">
+      <div style="margin:6px 0 8px;">現在の位置（ワールド座標）</div>
+      <div class="angle-line">
+        <span class="angle-name">X</span>
+        <span id="posX" class="angle-value">-</span>
+      </div>
+      <div class="angle-line">
+        <span class="angle-name">Y</span>
+        <span id="posY" class="angle-value">-</span>
+      </div>
+      <div class="angle-line">
+        <span class="angle-name">Z</span>
+        <span id="posZ" class="angle-value">-</span>
+      </div>
+      <hr>
+
+      <div class="row">
+        <label class="grow">
+          <input type="checkbox" id="toggleBoneMesh" checked>
+          ボーンメッシュ表示
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="grow"><input type="checkbox" id="toggleChartField" checked> グラフ領域表示</label>
+        <button class="pill" id="resetChartBtn">リセット</button>
+        <button class="pill" id="stopChartBtn">記録停止</button>
+      </div>
+      <div class="row">
+        <label class="grow"><input type="checkbox" id="plotTotal" checked> Total を描画</label>
+        <label class="grow"><input type="checkbox" id="plotTwist" checked> Twist を描画</label>
+        <label class="grow"><input type="checkbox" id="plotRelative" checked> Relative を描画</label>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <label class="grow">円弧矢印表示
+          <select id="arcMode">
+            <option value="twist">Twist を参照</option>
+            <option value="relative">Relative を参照</option>
+            <option value="total">Total を参照</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="arcVisible" checked> 表示</label>
+      </div>
+
+      <hr>
+      
+      <div class="row">
+        <button class="pill" onclick="location.href='vrm/index_vrm.html'">キャラクターを被せる→</button>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <button class="pill" onclick="location.href='dual/index_dual.html'">二つのデータを比較する→</button>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <button class="pill" onclick="location.href='../howtouse/instructions/instruction_ondemand.html'">使い方を見る→</button>
+      </div>      
+    </div>
+  </div>
+
+  <!-- ===== 下部：再生バー ===== -->
+  <div id="progressContainer">
+    <span id="currentTime">0:00</span>
+    <input type="range" id="progressBar" min="0" max="100" value="0" step="1">
+    <span id="totalTime">0:00</span>
+  </div>
+
+  <!-- ===== グラフ描画 ===== -->
+  <div id="angleChartWrap">
+    <canvas id="angleChart" width="900" height="240"></canvas>
+  </div>
+  <!--ここからJavaScript-->
+  <script src="../assets/libs/three.min.js"></script>
+  <script src="../assets/libs/OrbitControls.js"></script>
+  <script src="../assets/libs/chart.js"></script>
+  <script src="../mocopi_common.js"></script>
+  <script src="index_ondemand.js"></script>
+
+</body>
+</html>

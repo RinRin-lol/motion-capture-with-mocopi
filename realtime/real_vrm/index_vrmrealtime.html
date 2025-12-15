@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>リアルタイム Mocopi VRM Viewer + 角度計測</title>
+  <!-- 既存のレイアウトをそのまま使う想定 -->
+  <link rel="stylesheet" href="../index_realtime.css" />
+</head>
+<body>
+  <!-- 上部左側のコントロールパネル -->
+  <div id="controls">
+    <!-- WebSocket接続先 -->
+    <div class="muted">WebSocket先: <span id="wsUrlLabel">ws://192.168.11.5:8080</span></div>
+    <button class="pill" id="reconnectBtn">再接続</button>
+    <label class="row muted"><input type="checkbox" id="lockRootPos"> root位置を固定</label>
+
+    <!-- VRMモデル読み込み -->
+    <div class="muted" style="margin-top:8px;">VRMモデル</div>
+    <div class="muted">デフォルト: AliciaSolid.vrm</div>
+    <label class="row muted" style="margin-top:4px;">
+      <input type="file" id="vrmInput" accept=".vrm" />
+      自分のVRMを選択
+    </label>
+
+    <!-- 録画関連 -->
+    <button class="pill" id="toggleRecordBtn" style="margin-top:8px;">データを保存する</button>
+    <div class="muted" id="recordStatus">録画: 停止中</div>
+
+    <!-- 録画終了後にだけ表示する保存先選択 -->
+    <div id="saveChoice" style="display:none; gap:6px; flex-direction:column;">
+      <div class="muted">どこに保存しますか？</div>
+      <div class="row">
+        <button class="pill" data-save="client">クライアント</button>
+        <button class="pill" data-save="server">サーバ</button>
+        <button class="pill" data-save="both">両方</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右上のメニューボタン＋メニュー内容 -->
+  <div id="menu">
+    <button class="menu-toggle" id="menuBtn">☰</button>
+    <div id="menuContent" class="menu-content">
+      <div class="muted">角度(°)は以下の3種類を一括表示します</div>
+
+      <label>ボーン選択（角度を表示/記録）</label>
+      <select id="boneSelect"></select>
+
+      <div style="margin:6px 0 8px;">現在の角度</div>
+      <div class="angle-line"><span class="angle-name">Total（合成角）</span><span id="angleNowTotal" class="angle-value">-°</span></div>
+      <div class="angle-line"><span class="angle-name">Twist（ひねり角・厳密分解）</span><span id="angleNowTwist" class="angle-value">-°</span></div>
+      <div class="angle-line"><span class="angle-name">Relative（親に対する角）</span><span id="angleNowRelative" class="angle-value">-°</span></div>
+
+      <hr style="border-color:#555; margin:10px 0;">
+
+      <div class="row">
+        <label class="grow"><input type="checkbox" id="showChart"> グラフ表示</label>
+        <button class="pill" id="resetChartBtn">リセット</button>
+        <button class="pill" id="stopChartBtn">記録停止</button>
+      </div>
+      <div class="row">
+        <label class="grow"><input type="checkbox" id="plotTotal" checked> Total を描画</label>
+        <label class="grow"><input type="checkbox" id="plotTwist" checked> Twist を描画</label>
+        <label class="grow"><input type="checkbox" id="plotRelative" checked> Relative を描画</label>
+      </div>
+
+      <hr style="border-color:#555; margin:10px 0;">
+
+      <label>WebSocket URL</label>
+      <input type="text" id="wsUrl" value="ws://192.168.11.5:8080" />
+      <button class="pill" id="applyWsUrlBtn">URL 反映</button>
+
+      <!-- UDPポート変更 -->
+      <div class="row">
+        <input id="udpPortInput" class="grow" value="12351" />
+        <button class="pill" id="udpPortBtn">UDPポート変更</button>
+      </div>
+
+      <hr style="border-color:#555; margin:10px 0;">
+      <div class="muted">表示オプション</div>
+      <!-- スケルトンは使わないのでローカル軸だけ残す -->
+      <label class="row"><input type="checkbox" id="showLocalAxes"> 選択ボーンのローカル軸を表示</label>
+    </div>
+  </div>
+
+  <!-- 角度グラフ領域 -->
+  <div id="angleChartWrap">
+    <canvas id="angleChart" width="900" height="240"></canvas>
+  </div>
+
+  <!-- 既存の Chart.js をそのまま利用（グローバル Chart） -->
+  <script src="../../assets/libs/chart.js"></script>
+
+  <!-- three / three-vrm はモジュールとして読み込む（CDN版）。ローカル化も後で可能 -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.177.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.177.0/examples/jsm/",
+        "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3/lib/three-vrm.module.min.js"
+      }
+    }
+  </script>
+
+  <!-- メインロジック（下で定義） -->
+  <script type="module" src="index_vrmrealtime.js"></script>
+</body>
+</html>

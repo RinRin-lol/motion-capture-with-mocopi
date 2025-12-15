@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>モーション編集画面</title>
+  <link rel="stylesheet" href="index_editer.css" />
+</head>
+<body>
+  <div id="ui">
+    <input type="file" id="jsonUpload" accept=".json">
+    <input type="text" id="filenameInput" placeholder="保存後のファイル名を入力" style="margin-left:10px">
+  </div>
+
+  <div id="timeline">
+    <button id="backBtn">⏮️</button>
+    <button id="playBtn">▶️</button>
+    <button id="pauseBtn">⏸️</button>
+    <button id="forwardBtn">⏭️</button>
+    <div class="range-wrapper">
+      <div class="range-bar" id="rangeBar">
+        <div class="range-thumb" id="startThumb" style="left: 0%;"></div>
+        <div class="range-thumb" id="endThumb" style="left: 100%;"></div>
+        <div class="progress-dot" id="progressDot" style="left: 0%;"></div>
+      </div>
+    </div>
+    <div id="timeDisplay">0:00 / 0:00</div>
+    <button id="downloadBtn">この区間を保存</button>
+    <div class="row">
+    <button class="pill" onclick="location.href='../howtouse/instructions/instruction_editer.html'">使い方を見る→</button>
+    </div>
+  </div>
+
+  <canvas id="threeCanvas"></canvas>
+
+  <script src="../assets/libs/three.min.js"></script>
+  <script src="../assets/libs/OrbitControls.js"></script>
+  <script src="index_editer.js"></script>
+</body>
+</html>

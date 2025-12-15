@@ -1,0 +1,37 @@
+body { margin: 0; background: #111; color: white; font-family: sans-serif; overflow: hidden; }
+#ui {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(0,0,0,0.5); padding: 10px;
+  border-radius: 8px; z-index: 10;
+}
+#timeline {
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(0,0,0,0.5); padding: 10px;
+  border-radius: 10px; z-index: 10;
+}
+.range-wrapper {
+  position: relative; display: flex; align-items: center;
+}
+.range-bar {
+  width: 300px; height: 8px; background: #666;
+  position: relative; border-radius: 4px;
+}
+.range-thumb, .progress-dot {
+  position: absolute; top: -6px; width: 12px; height: 16px;
+  background: yellow; border-radius: 2px;
+  cursor: ew-resize;
+}
+.progress-dot {
+  background: white;
+}
+#threeCanvas {
+  display: block; width: 100vw; height: 100vh;
+}
+button, input[type="file"], input[type="text"] {
+  background: #444; color: #fff; border: none;
+  padding: 6px 12px; border-radius: 5px;
+  cursor: pointer;
+}
+button:hover { background: #666; }
+#timeDisplay { font-size: 14px; }

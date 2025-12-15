@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>リアルタイム Mocopi Skeleton Viewer + 角度計測（親相対スイング–ツイスト分解）</title>
+  <link rel="stylesheet" href="index_realtime.css" />
+</head>
+
+<body>
+  <!-- ======UI（コントロールパネル）====== -->
+  <div id="controls">
+    <!-- WebSocket接続先 -->
+    <div class="muted">WebSocket先: <span id="wsUrlLabel">ws://192.168.11.5:8080</span></div>
+    <button class="pill" id="reconnectBtn">再接続</button>
+    <!-- 録画関連 -->
+    <button class="pill" id="toggleRecordBtn">データを保存する</button>
+    <div class="muted" id="recordStatus">録画: 停止中</div>
+
+    <!-- 録画終了後にだけ表示する保存先選択 -->
+    <div id="saveChoice" style="display:none; gap:6px; flex-direction:column;">
+      <div class="muted">どこに保存しますか？</div>
+      <div class="row">
+        <button class="pill" data-save="client">クライアント</button>
+        <button class="pill" data-save="server">サーバ</button>
+        <button class="pill" data-save="both">両方</button>
+      </div>
+    </div>
+    <label class="row muted"><input type="checkbox" id="lockRootPos"> root位置を固定</label>
+    <div class="muted">PCの場合はCtrlキー ＋ ドラックで移動<br>タブレットの場合は2本指でスライドで移動</br></div>
+    <div style="margin-top:6px;">
+      <button class="pill" id="resetCameraButton">カメラ初期位置に戻す</button>
+    </div>
+  </div>
+  </div>
+
+  <!-- ======UI（メニュー）====== -->
+  <div id="menu">
+    <button class="menu-toggle" id="menuBtn">☰</button>
+    <div id="menuContent" class="menu-content">
+      <div class="muted">角度(°)は以下の3種類を一括表示します</div>
+
+      <label>ボーン選択（角度を表示/記録）</label>
+      <select id="boneSelect"></select>
+
+      <div style="margin:6px 0 8px;">現在の角度</div>
+      <div class="angle-line">
+        <span class="angle-name">Total（合成角）</span>
+        <span id="angleNowTotal" class="angle-value">-°</span>
+      </div>
+      <div class="angle-line">
+        <span class="angle-name">Twist（ひねり角・厳密分解）</span>
+        <span id="angleNowTwist" class="angle-value">-°</span>
+      </div>
+      <div class="angle-line">
+        <span class="angle-name">Relative（親に対する角）</span>
+        <span id="angleNowRelative" class="angle-value">-°</span>
+      </div>
+
+      <!-- ★ ここから追加：ワールド座標表示 -->
+      <hr style="border-color:#555; margin:10px 0;">
+      <div style="margin:6px 0 8px;">現在の位置（ワールド座標）</div>
+      <div class="angle-line">
+        <span class="angle-name">X</span>
+        <span id="posNowX" class="angle-value">-</span>
+      </div>
+      <div class="angle-line">
+        <span class="angle-name">Y</span>
+        <span id="posNowY" class="angle-value">-</span>
+      </div>
+      <div class="angle-line">
+        <span class="angle-name">Z</span>
+        <span id="posNowZ" class="angle-value">-</span>
+      </div>
+
+      <hr style="border-color:#555; margin:10px 0;">
+
+      <div class="row">
+        <label class="grow"><input type="checkbox" id="showChart"> グラフ表示</label>
+        <button class="pill" id="resetChartBtn">リセット</button>
+        <button class="pill" id="stopChartBtn">記録停止</button>
+      </div>
+      <div class="row">
+        <label class="grow"><input type="checkbox" id="plotTotal" checked> Total を描画</label>
+        <label class="grow"><input type="checkbox" id="plotTwist" checked> Twist を描画</label>
+        <label class="grow"><input type="checkbox" id="plotRelative" checked> Relative を描画</label>
+      </div>
+
+      <hr style="border-color:#555; margin:10px 0;">
+
+      <label>WebSocket URL</label>
+      <input type="text" id="wsUrl" value="ws://192.168.11.5:8080" />
+      <button class="pill" id="applyWsUrlBtn">URL 反映</button>
+
+      <!-- 使用するUDPポート選択 -->
+      <hr style="border-color:#555; margin:10px 0;">
+      <label>使用する UDPポート（mocopi宛先ポート）</label>
+      <div class="row">
+        <select id="udpPortSelect" class="grow">
+          <option value="12351">12351</option>
+          <option value="12352">12352</option>
+          <option value="12353">12353（予備）</option>
+        </select>
+      </div>
+
+      <hr style="border-color:#555; margin:10px 0;">
+      <div class="muted">表示オプション</div>
+      <label class="row"><input type="checkbox" id="showLocalAxes"> 選択ボーンのローカル軸を表示</label>
+      <label class="row"><input type="checkbox" id="showRedDots" checked> 関節に赤点を表示</label>
+      <label class="row"><input type="checkbox" id="showSkeletonLines" checked> スケルトン線を表示</label>
+      <hr>
+      <div class="row">
+        <button class="pill" onclick="location.href='real_vrm/index_vrmrealtime.html'">キャラクターを被せる→</button>
+      </div>
+      <hr>
+      <div class="row">
+        <button class="pill" onclick="location.href='real_dual/index_dualreal.html'">二つのデータを比較する→</button>
+      </div>
+      <hr>
+      <div class="row">
+        <button class="pill" onclick="location.href='../howtouse/instructions/instruction_ondemand.html'">使い方を見る→</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======UI（角度グラフ領域）====== -->
+  <div id="angleChartWrap">
+    <canvas id="angleChart" width="900" height="240"></canvas>
+  </div>
+
+  <!-- javascript -->
+  <script src="../assets/libs/three.min.js"></script>
+  <script src="../assets/libs/OrbitControls.js"></script>
+  <script src="../assets/libs/chart.js"></script>
+  <script src="../mocopi_common.js"></script>
+  <script src="index_realtime.js"></script>
+</body>
+</html>
