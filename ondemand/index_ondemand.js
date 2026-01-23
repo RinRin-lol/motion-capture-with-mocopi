@@ -28,10 +28,17 @@ const chartWrap    = document.getElementById('angleChartWrap');
 const toggleField  = document.getElementById('toggleChartField');
 const resetChartBtn= document.getElementById('resetChartBtn');
 const stopChartBtn = document.getElementById('stopChartBtn');
+const chartModeEl  = document.getElementById('chartMode');
 const plotTotalEl  = document.getElementById('plotTotal');
 const plotTwistEl  = document.getElementById('plotTwist');
 const plotRelEl    = document.getElementById('plotRelative');
+const plotPosXEl   = document.getElementById('plotPosX');
+const plotPosYEl   = document.getElementById('plotPosY');
+const plotPosZEl   = document.getElementById('plotPosZ');
 let angleChart = null, chartLogging = true, frameCounter = 0;
+
+// グラフモード（angle: 角度 / pos: 座標）
+let chartMode = 'angle';
 
 // 円弧矢印 UI
 const arcModeSel = document.getElementById('arcMode');
@@ -114,20 +121,76 @@ function createMocopiSkeleton() {
 // ===== Chart.js 初期化 =====
 function initChart(){
   const ctx = document.getElementById('angleChart').getContext('2d');
-  angleChart = new Chart(ctx, {
-    type:'line',
-    data:{ labels:[], datasets:[
+  // モードに応じたデータセットを生成
+  const makeDatasets = (mode) => {
+    if (mode === 'pos'){
+      return [
+        { label:'X', data:[], tension:0.08 },
+        { label:'Y', data:[], tension:0.08 },
+        { label:'Z', data:[], tension:0.08 },
+      ];
+    }
+    // default: angle
+    return [
       { label:'Total',    data:[], tension:0.08 },
       { label:'Twist',    data:[], tension:0.08 },
       { label:'Relative', data:[], tension:0.08 },
-    ]},
+    ];
+  };
+
+  angleChart = new Chart(ctx, {
+    type:'line',
+    data:{ labels:[], datasets: makeDatasets(chartMode) },
     options:{
       responsive:false,
       animation:false,
-      scales:{ x:{ title:{ display:true, text:'フレーム' } }, y:{ title:{ display:true, text:'角度(°)' }, min:0, max:360 } },
+      scales:{
+        x:{ title:{ display:true, text:'フレーム' } },
+        y:{ title:{ display:true, text:'角度(°)' }, min:0, max:360 }
+      },
       plugins:{ legend:{ display:true } }
     }
   });
+
+  // 角度/座標 グラフの切替
+  const applyChartMode = (mode, reset=true) => {
+    chartMode = (mode === 'pos') ? 'pos' : 'angle';
+
+    // チェックボックス表示切替（HTMLの .angle-only / .pos-only を利用）
+    document.querySelectorAll('.angle-only').forEach(el => el.style.display = (chartMode === 'angle') ? '' : 'none');
+    document.querySelectorAll('.pos-only').forEach(el => el.style.display   = (chartMode === 'pos')   ? '' : 'none');
+
+    // データセット差し替え
+    angleChart.data.datasets = makeDatasets(chartMode);
+
+    // 軸ラベルとスケール設定
+    if (chartMode === 'pos'){
+      angleChart.options.scales.y.title.text = '座標';
+      // 座標は自動スケール（min/maxを外す）
+      delete angleChart.options.scales.y.min;
+      delete angleChart.options.scales.y.max;
+    } else {
+      angleChart.options.scales.y.title.text = '角度(°)';
+      angleChart.options.scales.y.min = 0;
+      angleChart.options.scales.y.max = 360;
+    }
+
+    if (reset){
+      angleChart.data.labels.length = 0;
+      angleChart.data.datasets.forEach(d => d.data.length = 0);
+      frameCounter = 0;
+    }
+    angleChart.update();
+  };
+
+  // 初期表示の整合
+  applyChartMode(chartModeEl?.value || 'angle', true);
+
+  if (chartModeEl){
+    chartModeEl.addEventListener('change', (e) => {
+      applyChartMode(e.target.value, true);
+    });
+  }
 
   toggleField.addEventListener('change', () => {
     chartWrap.style.display = toggleField.checked ? 'block' : 'none';
@@ -194,9 +257,19 @@ function updateFrame(index){
 
     if (toggleField.checked && chartLogging){
       angleChart.data.labels.push(frameCounter++);
-      angleChart.data.datasets[0].data.push(plotTotalEl.checked  ? degTotal    : null);
-      angleChart.data.datasets[1].data.push(plotTwistEl.checked  ? degTwist    : null);
-      angleChart.data.datasets[2].data.push(plotRelEl.checked    ? degRelative : null);
+
+      if (chartMode === 'pos'){
+        // 座標（ワールド）
+        angleChart.data.datasets[0].data.push(plotPosXEl?.checked ? _tmpPosWorld.x : null);
+        angleChart.data.datasets[1].data.push(plotPosYEl?.checked ? _tmpPosWorld.y : null);
+        angleChart.data.datasets[2].data.push(plotPosZEl?.checked ? _tmpPosWorld.z : null);
+      } else {
+        // 角度
+        angleChart.data.datasets[0].data.push(plotTotalEl.checked  ? degTotal    : null);
+        angleChart.data.datasets[1].data.push(plotTwistEl.checked  ? degTwist    : null);
+        angleChart.data.datasets[2].data.push(plotRelEl.checked    ? degRelative : null);
+      }
+
       angleChart.update();
     }
 

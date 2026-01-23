@@ -75,10 +75,21 @@
         <button class="pill" id="resetChartBtn">リセット</button>
         <button class="pill" id="stopChartBtn">記録停止</button>
       </div>
+
+      <label>グラフ表示</label>
+      <select id="chartMode">
+        <option value="angle" selected>回転角度（Total/Twist/Relative）</option>
+        <option value="pos">座標（X/Y/Z・ワールド）</option>
+      </select>
+
       <div class="row">
-        <label class="grow"><input type="checkbox" id="plotTotal" checked> Total を描画</label>
-        <label class="grow"><input type="checkbox" id="plotTwist" checked> Twist を描画</label>
-        <label class="grow"><input type="checkbox" id="plotRelative" checked> Relative を描画</label>
+        <label class="grow angle-only"><input type="checkbox" id="plotTotal" checked> Total を描画</label>
+        <label class="grow angle-only"><input type="checkbox" id="plotTwist" checked> Twist を描画</label>
+        <label class="grow angle-only"><input type="checkbox" id="plotRelative" checked> Relative を描画</label>
+
+        <label class="grow pos-only" style="display:none;"><input type="checkbox" id="plotPosX" checked> X を描画</label>
+        <label class="grow pos-only" style="display:none;"><input type="checkbox" id="plotPosY" checked> Y を描画</label>
+        <label class="grow pos-only" style="display:none;"><input type="checkbox" id="plotPosZ" checked> Z を描画</label>
       </div>
 
       <hr>
