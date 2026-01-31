@@ -11,9 +11,7 @@ document.querySelector('[aria-label="保存したデータをみる"]').href = "
 document.querySelector('[aria-label="保存したデータを編集する"]').href = "editer/index_editer.html";
 
 // 設定ページへ
-document.querySelector('[aria-label="各種設定"]').onclick = function() {
-    alert("このページはまだ準備中です。");
-}
+document.querySelector('[aria-label="キャラクターを被せる"]').href = "ondemand/vrm/index_vrm.html";
 
 // 使い方ページへ
 document.querySelector('[aria-label="使い方"]').href = "howtouse/index_howto.html";

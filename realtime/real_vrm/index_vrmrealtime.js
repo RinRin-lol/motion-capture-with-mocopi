@@ -135,7 +135,7 @@ function initThree() {
   scene.background = new THREE.Color(0x000000);
 
   camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 1.5, 3);
+  camera.position.set(0, 2, 10);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -243,7 +243,7 @@ function setupVrmBoneNodes() {
 function loadDefaultVrm() {
   if (!vrmLoader) return;
   vrmLoader.load(
-    '../../assets/AliciaSolid.vrm',
+    '../../assets/test_man.vrm',
     gltf => {
       disposeCurrentVrm();
       setupVrmFromGltf(gltf);

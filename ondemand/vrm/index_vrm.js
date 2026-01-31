@@ -55,9 +55,9 @@ function initThree() {
   );
   // 座標系修正チェックに応じてカメラ位置を変える（初期表示用）
   if (document.getElementById("fixcoordinate_system").checked) {
-    camera.position.set(0, 2, 10);
-  } else {
     camera.position.set(0, 2, -10);
+  } else {
+    camera.position.set(0, 2, 10);
   }
   controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 1.2, 0);
@@ -142,7 +142,7 @@ function loadVrmFromArrayBuffer(arrayBuffer) {
   );
 }
 function loadDefaultVrm() {
-  loadVrmFromUrl('../../assets/AliciaSolid.vrm');
+  loadVrmFromUrl('../../assets/test_man.vrm');
 }
 // UIイベントの設定
 function setupUI() {

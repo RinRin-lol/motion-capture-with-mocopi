@@ -5,6 +5,7 @@
   <title>three.js JSONモーション再生 + 3種角度グラフ（親相対スイング-ツイスト対応 / 円弧矢印）</title>
   <link rel="stylesheet" href="index_ondemand.css" />
 </head>
+
 <body>
   <!-- ===== 左上：基本操作 ===== -->
   <div id="controls">
@@ -46,7 +47,7 @@
       <div class="angle-line"><span class="angle-name">Twist（ひねり角・親相対厳密）</span><span id="angleNowTwist" class="angle-value">-°</span></div>
       <div class="angle-line"><span class="angle-name">Relative（親相対の合成角）</span><span id="angleNowRelative" class="angle-value">-°</span></div>
 
-      <!-- ★ ここから追加：ワールド座標表示 -->
+      <!-- ワールド座標表示 -->
       <hr style="border-color:#555; margin:10px 0;">
       <div style="margin:6px 0 8px;">現在の位置（ワールド座標）</div>
       <div class="angle-line">
@@ -71,7 +72,7 @@
       </div>
 
       <div class="row">
-        <label class="grow"><input type="checkbox" id="toggleChartField" checked> グラフ領域表示</label>
+        <label class="grow"><input type="checkbox" id="toggleChartField" checked> グラフ表示</label>
         <button class="pill" id="resetChartBtn">リセット</button>
         <button class="pill" id="stopChartBtn">記録停止</button>
       </div>

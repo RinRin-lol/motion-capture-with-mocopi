@@ -10,8 +10,8 @@ document.querySelector('[aria-label="リアルタイムでモーションキャ�
 // オンデマンド説明へ
 document.querySelector('[aria-label="保存したデータをみるとき"]').href = "instructions/instruction_ondemand.html";
 
-// データ編集説明へ
-document.querySelector('[aria-label="保存したデータを編集するとき"]').href = "instructions/instruction_editer.html"
-
 // VRM説明へ
-document.querySelector('[aria-label="キャラクターを被せたいとき"]').href = "instructions/instruction_vrm.html";
+document.querySelector('[aria-label="キャラクターを被せたいとき"]').href = "instructions/instruction_vrm.html"
+
+// データ編集説明へ
+document.querySelector('[aria-label="保存したデータを編集するとき"]').href = "instructions/instruction_editer.html";
